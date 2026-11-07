@@ -1,4 +1,3 @@
-"""Főmenü: Orvos belépés / Beteg belépés / Kilépés."""
 from getpass import getpass
 from typing import Type
 

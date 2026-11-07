@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from config import APPOINTMENT_MINUTES, DATETIME_FORMAT
 from database.base import SessionLocal
-from models import Doctor, Idopont, OrvosSzakterulet, Patient, Rendelesido, Szakterulet
+from models import Doctor, Idopont, OrvosSzakterulet, Patient, Rendelesiido, Szakterulet
 from utils.scheduling import generate_slots, overlaps
 
 
@@ -25,7 +25,7 @@ def _get_patient(db: Session, user_id: int) -> Optional[Patient]:
     return db.scalar(select(Patient).where(Patient.felhasznaloId == user_id))
 
 
-def _free_slots(r: Rendelesido, now: datetime) -> list:
+def _free_slots(r: Rendelesiido, now: datetime) -> list:
     """A rendelési idő még szabad, jövőbeli sávjai.
 
     Üres lista, ha a rendelési idő betelt (maxPaciens). Egy sáv foglalt, ha
@@ -108,9 +108,9 @@ def get_available_slots(orvos_id: int, now: Optional[datetime] = None) -> List[d
     now = now or datetime.now()
     with SessionLocal() as db:
         stmt = (
-            select(Rendelesido)
-            .where(Rendelesido.orvosId == orvos_id, Rendelesido.vege > now)
-            .order_by(Rendelesido.kezdete)
+            select(Rendelesiido)
+            .where(Rendelesiido.orvosId == orvos_id, Rendelesiido.vege > now)
+            .order_by(Rendelesiido.kezdete)
         )
         result = []
         for r in db.scalars(stmt).all():
@@ -142,7 +142,7 @@ def book_appointment(user_id: int, rendelesido_id: int, kezdete: datetime,
         patient = _get_patient(db, user_id)
         if patient is None:
             raise BookingError("A beteg adatlap nem található.")
-        r = db.get(Rendelesido, rendelesido_id)
+        r = db.get(Rendelesiido, rendelesido_id)
         if r is None:
             raise BookingError("A rendelési idő nem létezik.")
 

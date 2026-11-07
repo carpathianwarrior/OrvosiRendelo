@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session
 from config import ROLE_DOCTOR, ROLE_PATIENT
 from database.base import Base, SessionLocal, engine
 from models import (
-    Betegellatas, Doctor, Idopont, OrvosSzakterulet, Patient, Rendelesido,
-    Reszleg, Szakterulet, SzakteruletReszleg, Szobak, User,
+    Betegellatas, Doctor, Idopont, OrvosSzakterulet, Patient, Rendelesiido,
+    Reszleg, Szakterulet, SzakteruletReszleg, Szoba, User,
 )
 from utils.security import hash_password
 
@@ -53,10 +53,10 @@ def seed(db: Session) -> None:
     ])
 
     # --- Szobák (minden részlegen legalább 1) -----------------------------
-    sz101 = Szobak(szobaszam="101", leiras="Kardiológiai rendelő, EKG-val", reszleg=belgyogy_r)
-    sz102 = Szobak(szobaszam="102", leiras="Kis műtő / beavatkozó", reszleg=sebeszet_r)
-    sz201 = Szobak(szobaszam="201", leiras="Bőrgyógyászati rendelő", reszleg=borgyogy_r)
-    sz301 = Szobak(szobaszam="301", leiras="Szemészeti vizsgáló, réslámpával", reszleg=szemeszet_r)
+    sz101 = Szoba(szobaszam="101", leiras="Kardiológiai rendelő, EKG-val", reszleg=belgyogy_r)
+    sz102 = Szoba(szobaszam="102", leiras="Kis műtő / beavatkozó", reszleg=sebeszet_r)
+    sz201 = Szoba(szobaszam="201", leiras="Bőrgyógyászati rendelő", reszleg=borgyogy_r)
+    sz301 = Szoba(szobaszam="301", leiras="Szemészeti vizsgáló, réslámpával", reszleg=szemeszet_r)
     db.add_all([sz101, sz102, sz201, sz301])
 
     # --- Felhasználók (közös tábla) ---------------------------------------
@@ -102,12 +102,12 @@ def seed(db: Session) -> None:
         return today + timedelta(days=days, hours=hour, minutes=minute)
 
     # múltbeli rendelési idők
-    r1 = Rendelesido(kezdete=at(-4, 8), vege=at(-4, 12), maxPaciens=8, orvos=dr_kovacs, szoba=sz101)
-    r2 = Rendelesido(kezdete=at(-3, 13), vege=at(-3, 17), maxPaciens=8, orvos=dr_szabo, szoba=sz201)
+    r1 = Rendelesiido(kezdete=at(-4, 8), vege=at(-4, 12), maxPaciens=8, orvos=dr_kovacs, szoba=sz101)
+    r2 = Rendelesiido(kezdete=at(-3, 13), vege=at(-3, 17), maxPaciens=8, orvos=dr_szabo, szoba=sz201)
     # jövőbeli rendelési idők
-    r3 = Rendelesido(kezdete=at(3, 9), vege=at(3, 11), maxPaciens=4, orvos=dr_nagy, szoba=sz301)
-    r4 = Rendelesido(kezdete=at(2, 8), vege=at(2, 12), maxPaciens=8, orvos=dr_kovacs, szoba=sz101)
-    r5 = Rendelesido(kezdete=at(4, 13), vege=at(4, 17), maxPaciens=8, orvos=dr_szabo, szoba=sz201)
+    r3 = Rendelesiido(kezdete=at(3, 9), vege=at(3, 11), maxPaciens=4, orvos=dr_nagy, szoba=sz301)
+    r4 = Rendelesiido(kezdete=at(2, 8), vege=at(2, 12), maxPaciens=8, orvos=dr_kovacs, szoba=sz101)
+    r5 = Rendelesiido(kezdete=at(4, 13), vege=at(4, 17), maxPaciens=8, orvos=dr_szabo, szoba=sz201)
     db.add_all([r1, r2, r3, r4, r5])
 
     # --- Időpontok (beteg + rendelési idő; mindegyik rendelési időben van legalább 1) ---

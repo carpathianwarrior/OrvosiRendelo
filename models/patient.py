@@ -17,5 +17,5 @@ class Patient(Base):
     telefonszam: Mapped[Optional[str]] = mapped_column(String)
 
     user: Mapped["User"] = relationship(back_populates="patient")
-    # Beteg 1 --- 0..* Idopont ("lefoglal")
+    # 0..*
     idopontok: Mapped[List["Idopont"]] = relationship(back_populates="beteg")
