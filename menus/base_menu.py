@@ -1,15 +1,11 @@
-"""Újrahasznosítható szöveges menü."""
+
 from typing import Callable, List, Optional, Tuple
 
 MenuEntry = Tuple[str, Callable[[], Optional[bool]]]
 
 
 class Menu:
-    """Számozott menü. A 0. pont mindig a kilépés/visszalépés.
-
-    Az akciók (callable-ök) visszatérhetnek True-val, ez bezárja a menüt;
-    None/False esetén a menü újra megjelenik.
-    """
+    
 
     def __init__(self, title: str, entries: List[MenuEntry], exit_label: str = "Vissza"):
         self.title = title
@@ -40,8 +36,7 @@ class Menu:
 
 
 def choose_from_list(title: str, labels: List[str], cancel_label: str = "Mégse") -> Optional[int]:
-    """Számozott listából választat. A választott elem 0-tól induló indexét adja,
-    vagy None-t, ha a felhasználó a 0-t (mégse) választja."""
+    
     print(f"\n--- {title} ---")
     for number, label in enumerate(labels, start=1):
         print(f"  {number}. {label}")
@@ -60,7 +55,7 @@ def choose_from_list(title: str, labels: List[str], cancel_label: str = "Mégse"
 
 
 def confirm(question: str) -> bool:
-    """Igen/nem megerősítés ('i' / 'n')."""
+
     while True:
         answer = input(f"{question} (i/n): ").strip().lower()
         if answer in ("i", "igen"):

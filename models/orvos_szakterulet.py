@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.base import Base
 
 class OrvosSzakterulet(Base):
-    """Kapcsolótábla: Orvos <-> Szakterulet (N:M)."""
+
     __tablename__ = "OrvosSzakterulet"
     __table_args__ = (UniqueConstraint("orvosId", "szakteruletId"),)
 

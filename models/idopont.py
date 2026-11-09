@@ -1,4 +1,4 @@
-"""Időpontfoglalás és a kórházi struktúra (részleg, szoba) táblái."""
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -13,7 +13,7 @@ class Idopont(Base):
     __tablename__ = "Idopont"
     __table_args__ = (
         CheckConstraint("vege > kezdete", name="ck_idopont_idotartam"),
-        # DB-szintű védelem a dupla foglalás ellen (egyszerre két folyamat esetén is)
+
         UniqueConstraint("rendelesIdoId", "kezdete", name="uq_idopont_rendelesido_kezdete"),
     )
 
@@ -25,7 +25,7 @@ class Idopont(Base):
 
     beteg: Mapped["Patient"] = relationship(back_populates="idopontok")
     rendelesido: Mapped["Rendelesido"] = relationship(back_populates="idopontok")
-    # Idopont 1 --- 0..1 Betegellatas ("megtörténik benne")
+
     betegellatas: Mapped[Optional["Betegellatas"]] = relationship(
         back_populates="idopont", uselist=False
     )

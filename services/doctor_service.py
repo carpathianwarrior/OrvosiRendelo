@@ -1,4 +1,4 @@
-"""Orvosi funkciók üzleti logikája. A függvények egyszerű dict-eket adnak vissza."""
+
 from typing import List, Optional
 
 from sqlalchemy import select
@@ -28,7 +28,6 @@ def get_profile(user_id: int) -> Optional[dict]:
 
 
 def get_consultation_hours(user_id: int) -> List[dict]:
-    """Az orvos rendelési idejei, időrendben."""
     with SessionLocal() as db:
         doctor = _get_doctor(db, user_id)
         if doctor is None:
@@ -47,7 +46,6 @@ def get_consultation_hours(user_id: int) -> List[dict]:
 
 
 def get_appointments(user_id: int) -> List[dict]:
-    """Az orvos rendelési időiben lefoglalt időpontok, időrendben."""
     with SessionLocal() as db:
         doctor = _get_doctor(db, user_id)
         if doctor is None:

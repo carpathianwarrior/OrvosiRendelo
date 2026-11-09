@@ -34,3 +34,5 @@ class MainMenu(Menu):
             menu_class().run()
         finally:
             auth_service.logout()
+
+

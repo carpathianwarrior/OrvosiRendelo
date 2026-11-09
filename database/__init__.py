@@ -1,1 +1,1 @@
-"""Adatbázis réteg."""
+

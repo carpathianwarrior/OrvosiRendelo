@@ -1,4 +1,4 @@
-"""Időpontfoglalás és a kórházi struktúra (részleg, szoba) táblái."""
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -24,5 +24,5 @@ class Rendelesiido(Base):
 
     orvos: Mapped["Doctor"] = relationship(back_populates="rendelesidok")
     szoba: Mapped["Szobak"] = relationship(back_populates="rendelesidok")
-    # Rendelesido 1 --- 1..* Idopont ("tartalmazza")
+
     idopontok: Mapped[List["Idopont"]] = relationship(back_populates="rendelesido")

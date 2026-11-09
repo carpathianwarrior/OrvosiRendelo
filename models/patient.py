@@ -1,4 +1,3 @@
-"""Beteg."""
 from typing import List, Optional
 
 from sqlalchemy import ForeignKey, Integer, String
@@ -17,5 +16,5 @@ class Patient(Base):
     telefonszam: Mapped[Optional[str]] = mapped_column(String)
 
     user: Mapped["User"] = relationship(back_populates="patient")
-    # 0..*
+
     idopontok: Mapped[List["Idopont"]] = relationship(back_populates="beteg")

@@ -1,4 +1,4 @@
-"""Időpontfoglalás és a kórházi struktúra (részleg, szoba) táblái."""
+
 from datetime import datetime
 from typing import List, Optional
 

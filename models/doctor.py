@@ -1,4 +1,3 @@
-"""Orvos és az orvosok szakterületeivel kapcsolatos táblák."""
 from typing import List, Optional
 
 from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint
@@ -17,9 +16,9 @@ class Doctor(Base):
     szakterulet: Mapped[Optional[str]] = mapped_column(String)
 
     user: Mapped["User"] = relationship(back_populates="doctor")
-    # Orvos 1 --- 1..* OrvosSzakterulet ("ezek a szakterületei")
+
     orvos_szakteruletek: Mapped[List["OrvosSzakterulet"]] = relationship(back_populates="orvos")
-    # Orvos 1 --- 0..* Rendelesido ("rendel ekkor")
+
     rendelesidok: Mapped[List["Rendelesido"]] = relationship(back_populates="orvos")
 
 

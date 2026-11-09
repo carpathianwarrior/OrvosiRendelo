@@ -1,4 +1,3 @@
-"""Időpontfoglalás és a kórházi struktúra (részleg, szoba) táblái."""
 from datetime import datetime
 from typing import List, Optional
 
@@ -9,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.base import Base
 class SzakteruletReszleg(Base):
-    """Kapcsolótábla: Szakterulet <-> Reszleg (N:M)."""
+
     __tablename__ = "SzakteruletReszleg"
     __table_args__ = (UniqueConstraint("szakteruletId", "reszlegId"),)
 

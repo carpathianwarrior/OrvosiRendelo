@@ -1,4 +1,3 @@
-"""Belépés / kilépés."""
 from dataclasses import dataclass
 from typing import Optional
 
@@ -18,18 +17,12 @@ class AuthenticatedUser:
 
 
 def normalize_taj(taj: str) -> str:
-    """'123 456 789' és '123-456-789' is '123456789' lesz."""
+
     return "".join(ch for ch in taj if ch.isdigit())
 
 
 def login(taj: str, password: str, expected_role: str) -> Optional[AuthenticatedUser]:
-    """TAJ szám + jelszó alapján belépteti a felhasználót.
 
-    Sikeres belépéskor beállítja az utils.session változóit
-    (current_user_id, current_role) és visszaadja a felhasználót.
-    Hibás adatoknál, vagy ha a felhasználó szerepe nem egyezik a kért
-    szerepkörrel, None-t ad (és nem árulja el, melyik adat volt rossz).
-    """
     taj = normalize_taj(taj)
     with SessionLocal() as db:
         user = db.scalar(select(User).where(User.TAJ == taj, User.szerep == expected_role))

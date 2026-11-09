@@ -1,4 +1,3 @@
-"""Orvosi menü."""
 from config import DATETIME_FORMAT
 from menus.base_menu import Menu
 from services import doctor_service

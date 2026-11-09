@@ -1,4 +1,4 @@
-"""Közös felhasználó tábla: ide kerül a belépéshez szükséges összes adat."""
+
 from typing import Optional
 
 from sqlalchemy import CheckConstraint, Integer, String
@@ -22,6 +22,6 @@ class User(Base):
     jelszo_hash: Mapped[str] = mapped_column(String, nullable=False)
     szerep: Mapped[str] = mapped_column(String, nullable=False)
 
-    # User 1 --- 0..1 Doctor / Patient (a szerep dönti el, melyik létezik)
+   
     doctor: Mapped[Optional["Doctor"]] = relationship(back_populates="user", uselist=False)
     patient: Mapped[Optional["Patient"]] = relationship(back_populates="user", uselist=False)

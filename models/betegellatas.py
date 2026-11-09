@@ -15,7 +15,7 @@ class Betegellatas(Base):
     panasz: Mapped[str] = mapped_column(String)
     diagnozis: Mapped[str] = mapped_column(String)
     eredmeny: Mapped[str] = mapped_column(String)
-    # unique=True -> egy időponthoz legfeljebb egy ellátás tartozhat (0..1)
+
     idopontId: Mapped[int] = mapped_column(
         ForeignKey("Idopont.idopontId"), nullable=False, unique=True
     )

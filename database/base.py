@@ -1,4 +1,3 @@
-"""Declarative Base, engine és SessionLocal."""
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
@@ -11,10 +10,8 @@ class Base(DeclarativeBase):
 
 engine = create_engine(DB_URL, echo=False)
 
-
 @event.listens_for(engine, "connect")
 def _enable_foreign_keys(dbapi_connection, connection_record):
-    # SQLite-ban alapból ki van kapcsolva az idegen kulcsok ellenőrzése
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys = ON")
     cursor.close()

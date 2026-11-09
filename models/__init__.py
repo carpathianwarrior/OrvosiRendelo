@@ -1,4 +1,3 @@
-"""Itt importáljuk az összes modellt, hogy a Base.metadata mindet ismerje."""
 from models.user import User
 from models.doctor import Doctor
 from models.patient import Patient

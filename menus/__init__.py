@@ -1,1 +1,1 @@
-"""Felhasználói felület (input/print)."""
+

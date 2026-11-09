@@ -1,4 +1,3 @@
-"""Beteg menü."""
 from datetime import datetime
 
 from config import DATETIME_FORMAT
@@ -25,7 +24,6 @@ class PatientMenu(Menu):
             exit_label="Kijelentkezés",
         )
 
-    # ------------------------------------------------------------ megtekintés
     @staticmethod
     def _show_profile() -> None:
         profile = patient_service.get_profile(session.current_user_id)
@@ -50,10 +48,9 @@ class PatientMenu(Menu):
             if a["diagnozis"]:
                 print(f"    diagnózis: {a['diagnozis']} | eredmény: {a['eredmeny']}")
 
-    # ------------------------------------------------------------ időpontfoglalás
     @staticmethod
     def _book_appointment() -> None:
-        # 1-2. Szakterületek listázása és kiválasztása
+
         specialties = patient_service.list_specialties()
         if not specialties:
             print("Jelenleg nincs elérhető szakterület.")
@@ -63,7 +60,6 @@ class PatientMenu(Menu):
             return
         specialty = specialties[index]
 
-        # 3-4. A szakterülethez tartozó orvosok listázása és kiválasztása
         doctors = patient_service.list_doctors_by_specialty(specialty["szakteruletId"])
         if not doctors:
             print(f"A(z) {specialty['megnevezes']} szakterülethez jelenleg nem tartozik orvos.")
@@ -73,7 +69,6 @@ class PatientMenu(Menu):
             return
         doctor = doctors[index]
 
-        # 5. Rendelési idők, amelyekben van szabad időpont
         hours = patient_service.get_available_slots(doctor["orvosId"])
         if not hours:
             print(f"{doctor['nev']} rendelésein jelenleg nincs szabad időpont.")
@@ -88,14 +83,14 @@ class PatientMenu(Menu):
             return
         consultation = hours[index]
 
-        # 6. Szabad időpont kiválasztása
+
         slot_labels = [_fmt_range(start, end) for start, end in consultation["slots"]]
         index = choose_from_list("Szabad időpontok", slot_labels)
         if index is None:
             return
         start, _ = consultation["slots"][index]
 
-        # 7-8. Ütközés- és kapacitásellenőrzés, majd rögzítés (a service végzi)
+
         try:
             booked = patient_service.book_appointment(
                 session.current_user_id, consultation["rendelesIdoId"], start
@@ -108,10 +103,9 @@ class PatientMenu(Menu):
         print(f"  {_fmt_range(booked['kezdete'], booked['vege'])}")
         print(f"  {booked['orvos_nev']} | {booked['szoba']}. szoba ({booked['reszleg']})")
 
-    # ------------------------------------------------------------ lemondás
+
     @staticmethod
     def _cancel_appointment() -> None:
-        # 1. Saját, jövőbeli időpontok
         upcoming = patient_service.get_upcoming_appointments(session.current_user_id)
         if not upcoming:
             print("\nNincs lemondható (jövőbeli) időpontod.")
@@ -122,17 +116,14 @@ class PatientMenu(Menu):
             for a in upcoming
         ]
 
-        # 2. Lemondandó kiválasztása
         index = choose_from_list("Lemondható időpontjaid", labels)
         if index is None:
             return
-
-        # 3. Megerősítés
+        
         if not confirm(f"Biztosan lemondod ezt az időpontot: {labels[index]}?"):
             print("A lemondás megszakítva.")
             return
 
-        # 4. Törlés (a hely újra szabaddá válik)
         try:
             patient_service.cancel_appointment(session.current_user_id, upcoming[index]["idopontId"])
         except BookingError as error:

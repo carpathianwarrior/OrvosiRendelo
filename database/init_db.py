@@ -1,9 +1,4 @@
-"""Táblák létrehozása és mintaadatok betöltése.
 
-Önálló futtatás (a rendelo_app mappából):
-    python -m database.init_db           # létrehozás + feltöltés, ha üres
-    python -m database.init_db --reset   # minden törlése és újrafeltöltés
-"""
 import sys
 from datetime import datetime, timedelta
 
@@ -20,7 +15,6 @@ from utils.security import hash_password
 
 
 def init_db(reset: bool = False) -> None:
-    """Létrehozza a táblákat; a mintaadatokat csak üres adatbázisba tölti be."""
     if reset:
         Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -31,7 +25,7 @@ def init_db(reset: bool = False) -> None:
 
 
 def seed(db: Session) -> None:
-    # --- Szakterületek és részlegek ---------------------------------------
+
     kardio = Szakterulet(megnevezes="Kardiológia")
     borgyogy = Szakterulet(megnevezes="Bőrgyógyászat")
     szemeszet = Szakterulet(megnevezes="Szemészet")
@@ -44,7 +38,6 @@ def seed(db: Session) -> None:
     db.add_all([kardio, borgyogy, szemeszet,
                 belgyogy_r, sebeszet_r, borgyogy_r, szemeszet_r])
 
-    # Szakterület <-> Részleg (mindkét oldalon legalább 1 kapcsolat van)
     db.add_all([
         SzakteruletReszleg(szakterulet=kardio, reszleg=belgyogy_r),
         SzakteruletReszleg(szakterulet=kardio, reszleg=sebeszet_r),
@@ -52,14 +45,13 @@ def seed(db: Session) -> None:
         SzakteruletReszleg(szakterulet=szemeszet, reszleg=szemeszet_r),
     ])
 
-    # --- Szobák (minden részlegen legalább 1) -----------------------------
+
     sz101 = Szoba(szobaszam="101", leiras="Kardiológiai rendelő, EKG-val", reszleg=belgyogy_r)
     sz102 = Szoba(szobaszam="102", leiras="Kis műtő / beavatkozó", reszleg=sebeszet_r)
     sz201 = Szoba(szobaszam="201", leiras="Bőrgyógyászati rendelő", reszleg=borgyogy_r)
     sz301 = Szoba(szobaszam="301", leiras="Szemészeti vizsgáló, réslámpával", reszleg=szemeszet_r)
     db.add_all([sz101, sz102, sz201, sz301])
 
-    # --- Felhasználók (közös tábla) ---------------------------------------
     u_kovacs = User(nev="Dr. Kovács István", TAJ="111222333", email="kovacs.istvan@korhaz.example",
                     jelszo_hash=hash_password("orvos123"), szerep=ROLE_DOCTOR)
     u_szabo = User(nev="Dr. Szabó Anna", TAJ="444555666", email="szabo.anna@korhaz.example",
@@ -75,7 +67,7 @@ def seed(db: Session) -> None:
                   jelszo_hash=hash_password("beteg789"), szerep=ROLE_PATIENT)
     db.add_all([u_kovacs, u_szabo, u_nagy, u_toth, u_horvath, u_kiss])
 
-    # --- Orvosok és betegek (szerepkör-specifikus adatok) -----------------
+
     dr_kovacs = Doctor(user=u_kovacs, szakterulet="Kardiológia")
     dr_szabo = Doctor(user=u_szabo, szakterulet="Bőrgyógyászat")
     dr_nagy = Doctor(user=u_nagy, szakterulet="Szemészet")
@@ -85,7 +77,6 @@ def seed(db: Session) -> None:
     b3 = Patient(user=u_kiss, telefonszam="+36705556667")
     db.add_all([dr_kovacs, dr_szabo, dr_nagy, b1, b2, b3])
 
-    # Orvos <-> Szakterület (több szakterület is lehet)
     db.add_all([
         OrvosSzakterulet(orvos=dr_kovacs, szakterulet=kardio),
         OrvosSzakterulet(orvos=dr_szabo, szakterulet=borgyogy),
@@ -93,24 +84,20 @@ def seed(db: Session) -> None:
         OrvosSzakterulet(orvos=dr_nagy, szakterulet=szemeszet),
     ])
 
-    # --- Rendelési idők (orvos + szoba) -----------------------------------
-    # A dátumok a seed futtatásának napjához igazodnak, így mindig van múltbeli
-    # és jövőbeli rendelési idő is (a foglalás/lemondás kipróbálásához).
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     def at(days: int, hour: int, minute: int = 0) -> datetime:
         return today + timedelta(days=days, hours=hour, minutes=minute)
 
-    # múltbeli rendelési idők
+
     r1 = Rendelesiido(kezdete=at(-4, 8), vege=at(-4, 12), maxPaciens=8, orvos=dr_kovacs, szoba=sz101)
     r2 = Rendelesiido(kezdete=at(-3, 13), vege=at(-3, 17), maxPaciens=8, orvos=dr_szabo, szoba=sz201)
-    # jövőbeli rendelési idők
+    
     r3 = Rendelesiido(kezdete=at(3, 9), vege=at(3, 11), maxPaciens=4, orvos=dr_nagy, szoba=sz301)
     r4 = Rendelesiido(kezdete=at(2, 8), vege=at(2, 12), maxPaciens=8, orvos=dr_kovacs, szoba=sz101)
     r5 = Rendelesiido(kezdete=at(4, 13), vege=at(4, 17), maxPaciens=8, orvos=dr_szabo, szoba=sz201)
     db.add_all([r1, r2, r3, r4, r5])
 
-    # --- Időpontok (beteg + rendelési idő; mindegyik rendelési időben van legalább 1) ---
     i1 = Idopont(kezdete=at(-4, 8), vege=at(-4, 8, 30), beteg=b1, rendelesido=r1)
     i2 = Idopont(kezdete=at(-4, 8, 30), vege=at(-4, 9), beteg=b2, rendelesido=r1)
     i3 = Idopont(kezdete=at(-3, 13), vege=at(-3, 13, 30), beteg=b2, rendelesido=r2)
@@ -120,7 +107,7 @@ def seed(db: Session) -> None:
     i7 = Idopont(kezdete=at(4, 13), vege=at(4, 13, 30), beteg=b3, rendelesido=r5)
     db.add_all([i1, i2, i3, i4, i5, i6, i7])
 
-    # --- Betegellátás (csak a már megtörtént időpontokhoz: 0..1) ----------
+
     db.add_all([
         Betegellatas(betegellatasId="BE-2026-0001", panasz="Mellkasi szorítás terheléskor",
                      diagnozis="Szívritmuszavar gyanúja", eredmeny="24 órás Holter EKG elrendelve",
