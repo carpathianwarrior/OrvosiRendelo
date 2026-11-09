@@ -8,7 +8,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.base import Base
-class Rendelesiido(Base):
+class Rendelesido(Base):
     __tablename__ = "Rendelesido"
     __table_args__ = (
         CheckConstraint("vege > kezdete", name="ck_rendelesido_idotartam"),
@@ -25,4 +25,4 @@ class Rendelesiido(Base):
     orvos: Mapped["Doctor"] = relationship(back_populates="rendelesidok")
     szoba: Mapped["Szobak"] = relationship(back_populates="rendelesidok")
 
-    idopontok: Mapped[List["Idopont"]] = relationship(back_populates="rendelesido")
+    idopontok: Mapped[List["Idopont"]] = relationship(back_populates="rendelesido") 
