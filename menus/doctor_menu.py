@@ -93,6 +93,36 @@ class DoctorMenu(Menu):
                   f"diagnózis: {p['diagnozis'] or '-'}")
         print(f"Összesen: {len(patients)} beteg ({chosen['max']} férőhelyből).")
 
+    @staticmethod
+    def _show_patient_list() -> None:
+        """Egy kiválasztott rendelési idő foglalt időpontjai és betegei."""
+        user_id = session.current_user_id
+        hours = doctor_service.get_consultation_hours(user_id)
+        if not hours:
+            print("\nNincs rendelési idő.")
+            return
+        labels = [f"{_fmt_range(h['kezdete'], h['vege'])} | {h['szoba']}. szoba ({h['reszleg']}) | "
+                  f"foglalt: {h['foglalt']}/{h['max']}" for h in hours]
+        index = choose_from_list("Rendelési idő kiválasztása", labels)
+        if index is None:
+            return
+        chosen = hours[index]
+        try:
+            patients = doctor_service.get_patient_list(user_id, chosen["rendelesIdoId"])
+        except ConsultationError as error:
+            print(f"\n{error}")
+            return
+        print(f"\n--- Beteglista: {_fmt_range(chosen['kezdete'], chosen['vege'])}, "
+              f"{chosen['szoba']}. szoba ---")
+        if not patients:
+            print("Ehhez a rendelési időhöz még nincs foglalt időpont.")
+            return
+        for p in patients:
+            print(f"{p['kezdete'].strftime('%H:%M')} - {p['vege'].strftime('%H:%M')} | "
+                  f"{p['beteg_nev']} (TAJ: {p['beteg_taj']}) | tel.: {p['beteg_telefon'] or '-'} | "
+                  f"diagnózis: {p['diagnozis'] or '-'}")
+        print(f"Összesen: {len(patients)} beteg ({chosen['max']} férőhelyből).")
+
     # ------------------------------------------------------------ rendelési idő meghirdetése
     @staticmethod
     def _announce_consultation_hour() -> None:
