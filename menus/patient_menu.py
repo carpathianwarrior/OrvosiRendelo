@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from config import DATETIME_FORMAT
+from menus.account_menu import EditAccountMenu
 from menus.base_menu import Menu, choose_from_list, confirm
 from services import patient_service
 from services.patient_service import BookingError
@@ -17,6 +18,7 @@ class PatientMenu(Menu):
             "Beteg menü",
             [
                 ("Saját adataim", self._show_profile),
+                ("Saját adatok módosítása", lambda: EditAccountMenu().run()),
                 ("Időpontjaim", self._show_appointments),
                 ("Időpontfoglalás", self._book_appointment),
                 ("Időpont lemondása", self._cancel_appointment),

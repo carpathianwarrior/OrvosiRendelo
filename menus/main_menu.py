@@ -2,6 +2,7 @@ from getpass import getpass
 from typing import Type
 
 from config import ROLE_DOCTOR, ROLE_PATIENT
+from menus.account_menu import register
 from menus.base_menu import Menu
 from menus.doctor_menu import DoctorMenu
 from menus.patient_menu import PatientMenu
@@ -15,6 +16,7 @@ class MainMenu(Menu):
             [
                 ("Orvos belépés", lambda: self._login(ROLE_DOCTOR, DoctorMenu)),
                 ("Beteg belépés", lambda: self._login(ROLE_PATIENT, PatientMenu)),
+                ("Regisztráció", register),
             ],
             exit_label="Kilépés",
         )

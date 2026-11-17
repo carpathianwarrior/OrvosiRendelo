@@ -82,6 +82,7 @@ def get_consultation_hours(user_id: int) -> List[dict]:
             return []
         return [
             {
+                "rendelesIdoId": r.rendelesIdoId,
                 "kezdete": r.kezdete,
                 "vege": r.vege,
                 "szoba": r.szoba.szobaszam,
@@ -110,6 +111,35 @@ def get_appointments(user_id: int) -> List[dict]:
             }
             for r in doctor.rendelesidok
             for i in r.idopontok
+        ]
+        return sorted(rows, key=lambda row: row["kezdete"])
+
+
+def get_patient_list(user_id: int, rendelesido_id: int) -> List[dict]:
+    """Egy rendelési időhöz foglalt időpontok és a hozzájuk tartozó betegek, időrendben.
+
+    Csak az orvos saját rendelési idejére kérdezhető le; idegen vagy nem létező
+    rendelési időre ConsultationError-t dob.
+    """
+    with SessionLocal() as db:
+        doctor = _get_doctor(db, user_id)
+        if doctor is None:
+            raise ConsultationError("Az orvosi adatlap nem található.")
+        rendelesido = db.get(Rendelesido, rendelesido_id)
+        if rendelesido is None or rendelesido.orvosId != doctor.orvosId:
+            raise ConsultationError("A rendelési idő nem található.")
+        rows = [
+            {
+                "idopontId": i.idopontId,
+                "kezdete": i.kezdete,
+                "vege": i.vege,
+                "beteg_nev": i.beteg.user.nev,
+                "beteg_taj": i.beteg.user.TAJ,
+                "beteg_telefon": i.beteg.telefonszam,
+                "beteg_email": i.beteg.user.email,
+                "diagnozis": i.betegellatas.diagnozis if i.betegellatas else None,
+            }
+            for i in rendelesido.idopontok
         ]
         return sorted(rows, key=lambda row: row["kezdete"])
 
