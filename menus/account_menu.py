@@ -1,4 +1,4 @@
-"""Regisztráció és saját adatok módosítása (minden szerepkörnek közös)."""
+
 from getpass import getpass
 from typing import Optional
 
@@ -10,7 +10,6 @@ from utils import session
 
 
 def _ask(label: str, current: Optional[str] = None) -> str:
-    """Szöveg bekérése. Módosításnál az üres bevitel a jelenlegi értéket tartja meg."""
     if current is None:
         return input(f"{label}: ").strip()
     shown = current or "-"
@@ -21,7 +20,6 @@ def _ask(label: str, current: Optional[str] = None) -> str:
 
 
 def _ask_password(label: str) -> Optional[str]:
-    """Jelszó bekérése megerősítéssel. None, ha nem egyezik."""
     first = getpass(f"{label}: ")
     if getpass(f"{label} újra: ") != first:
         print("A két jelszó nem egyezik.")

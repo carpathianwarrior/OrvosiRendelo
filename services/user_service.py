@@ -1,4 +1,3 @@
-"""Általános felhasználói funkciók: regisztráció és saját adatok módosítása."""
 import re
 from typing import List, Optional
 
@@ -17,10 +16,9 @@ _PHONE_RE = re.compile(r"^\+?[0-9 /()-]{6,20}$")
 
 
 class UserError(Exception):
-    """Regisztráció / adatmódosítás üzleti szabálysértése (az üzenet megjeleníthető)."""
+    """Hiba regisztrációnál"""
 
 
-# ------------------------------------------------------------------ validáció
 def _clean_name(nev: str) -> str:
     nev = " ".join((nev or "").split())
     if len(nev) < 2:
@@ -65,11 +63,9 @@ def _email_taken(db, email: Optional[str], exclude_user_id: Optional[int] = None
     return other is not None and other.felhasznaloId != exclude_user_id
 
 
-# ------------------------------------------------------------------ regisztráció
 def register_user(role: str, nev: str, taj: str, password: str, email: Optional[str] = None,
                   telefon: Optional[str] = None,
                   szakterulet_ids: Optional[List[int]] = None) -> dict:
-    """Új felhasználó (beteg vagy orvos) felvétele. Orvosnál legalább egy szakterület kell."""
     if role not in (ROLE_DOCTOR, ROLE_PATIENT):
         raise UserError("Ismeretlen szerepkör.")
     nev, taj, email = _clean_name(nev), _clean_taj(taj), _clean_email(email)
@@ -105,7 +101,6 @@ def register_user(role: str, nev: str, taj: str, password: str, email: Optional[
         return {"felhasznaloId": user.felhasznaloId, "nev": user.nev, "szerep": user.szerep}
 
 
-# ------------------------------------------------------------------ saját adatok
 def get_account(user_id: int) -> Optional[dict]:
     with SessionLocal() as db:
         user = db.get(User, user_id)
@@ -122,7 +117,6 @@ def get_account(user_id: int) -> Optional[dict]:
 
 def update_profile(user_id: int, nev: str, email: Optional[str],
                    telefon: Optional[str] = None) -> None:
-    """Név, e-mail (és betegnél telefonszám) módosítása. A TAJ szám nem módosítható."""
     nev, email = _clean_name(nev), _clean_email(email)
     telefon = _clean_phone(telefon)
     with SessionLocal() as db:

@@ -1,4 +1,3 @@
-"""Orvosi menü."""
 from datetime import datetime
 
 from config import APPOINTMENT_MINUTES, DATETIME_FORMAT
@@ -28,7 +27,6 @@ class DoctorMenu(Menu):
             exit_label="Kijelentkezés",
         )
 
-    # ------------------------------------------------------------ megtekintés
     @staticmethod
     def _show_profile() -> None:
         profile = doctor_service.get_profile(session.current_user_id)
@@ -65,7 +63,6 @@ class DoctorMenu(Menu):
 
     @staticmethod
     def _show_patient_list() -> None:
-        """Egy kiválasztott rendelési idő foglalt időpontjai és betegei."""
         user_id = session.current_user_id
         hours = doctor_service.get_consultation_hours(user_id)
         if not hours:
@@ -95,7 +92,6 @@ class DoctorMenu(Menu):
 
     @staticmethod
     def _show_patient_list() -> None:
-        """Egy kiválasztott rendelési idő foglalt időpontjai és betegei."""
         user_id = session.current_user_id
         hours = doctor_service.get_consultation_hours(user_id)
         if not hours:
@@ -123,12 +119,10 @@ class DoctorMenu(Menu):
                   f"diagnózis: {p['diagnozis'] or '-'}")
         print(f"Összesen: {len(patients)} beteg ({chosen['max']} férőhelyből).")
 
-    # ------------------------------------------------------------ rendelési idő meghirdetése
     @staticmethod
     def _announce_consultation_hour() -> None:
         user_id = session.current_user_id
 
-        # 1. Saját szakterületek listázása és kiválasztása
         specialties = doctor_service.get_my_specialties(user_id)
         if not specialties:
             print("\nA profilodhoz nincs szakterület rendelve.")
@@ -138,7 +132,6 @@ class DoctorMenu(Menu):
             return
         specialty = specialties[index]
 
-        # 2. Részleg kiválasztása
         departments = doctor_service.get_departments_for_specialty(specialty["szakteruletId"])
         if not departments:
             print(f"\nA(z) {specialty['megnevezes']} szakterülethez nincs részleg rendelve.")
@@ -149,7 +142,6 @@ class DoctorMenu(Menu):
             return
         department = departments[index]
 
-        # 3. Kezdet, vég és maximális páciensszám
         print(f"\nA rendelési idő {APPOINTMENT_MINUTES} perces időpontokra lesz osztva.")
         kezdete = prompt_datetime("Rendelés kezdete")
         if kezdete is None:
@@ -161,7 +153,6 @@ class DoctorMenu(Menu):
         if max_paciens is None:
             return
 
-        # 4. Orvosütközés és érvényesség ellenőrzése, majd a szabad szobák lekérése
         try:
             doctor_service.check_consultation_window(user_id, kezdete, vege, max_paciens)
         except ConsultationError as error:
@@ -172,14 +163,12 @@ class DoctorMenu(Menu):
             print(f"\nEbben az időszakban nincs szabad szoba a(z) {department['megnevezes']} részlegen.")
             return
 
-        # 5. Szabad szoba kiválasztása
         labels = [f"{r['szobaszam']}. szoba" + (f" - {r['leiras']}" if r["leiras"] else "") for r in rooms]
         index = choose_from_list(f"Szabad szobák ({department['megnevezes']})", labels)
         if index is None:
             return
         room = rooms[index]
 
-        # Összegzés és megerősítés
         print("\nMeghirdetendő rendelési idő:")
         print(f"  Szakterület:  {specialty['megnevezes']}")
         print(f"  Részleg/szoba: {department['megnevezes']}, {room['szobaszam']}. szoba")
@@ -189,7 +178,6 @@ class DoctorMenu(Menu):
             print("A meghirdetés megszakítva.")
             return
 
-        # 6. Rögzítés (a service a szobaütközést is újraellenőrzi)
         try:
             created = doctor_service.create_consultation_hour(
                 user_id, room["szobaId"], kezdete, vege, max_paciens
